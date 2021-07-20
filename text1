@@ -1,0 +1,401 @@
+//
+//  ViewController.swift
+//  2021BGAanalysis
+//
+//  Created by chikato kitamuro on 2021/07/07.
+//
+
+import UIKit
+
+class ViewController: UIViewController {
+
+    @IBOutlet weak var phlabel: UITextField!
+    @IBOutlet weak var pco2label: UITextField!
+    @IBOutlet weak var hco3label: UITextField!
+    @IBOutlet weak var nalabel: UITextField!
+    @IBOutlet weak var klabel: UITextField!
+    @IBOutlet weak var cllabel: UITextField!
+    
+    @IBOutlet weak var yosoku1: UILabel!
+    @IBOutlet weak var yosoku2: UILabel!
+    
+    @IBOutlet weak var kaisetu1: UITextView!
+    @IBOutlet weak var kaisetu2: UITextView!
+    @IBOutlet weak var kaisetu3: UITextView!
+    @IBOutlet weak var kaisetu4: UITextView!
+    
+    @IBOutlet weak var data: UILabel!
+    
+    @IBOutlet weak var aglabel: UILabel!
+    
+    @IBOutlet weak var derugaplabelta: UILabel!
+    
+    var ph : Double = 7.40
+    var pco2 : Double = 40.0
+    var hco3 : Double = 24.0
+    var na : Double = 140.0
+    var k : Double = 4.0
+    var cl : Double = 104.0
+
+    //var alb : Double = 3.5
+    
+    var aniongap : Double = 12.0
+    var dertagap : Double = 1.0
+    
+    var data1 : Double = 7.4
+  
+    var yosokupco2acid = 40.0
+    var yosokupco2alk = 40.0
+    
+    var yosokuphacuteacid = 7.35
+    var yosokuphchoacid = 7.35
+    
+    var yosokuphacutealk = 7.45
+    var yosokuphchoalk = 7.45
+    
+    
+    
+    @IBAction func keykieru(_ sender: Any) {
+    }
+    
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+    }
+
+
+    
+    @IBAction func kaiseki(_ sender: Any) {
+        ph = Double(phlabel.text!)!
+               pco2 = Double(pco2label.text!)!
+               hco3 = Double(hco3label.text!)!
+               na = Double(nalabel.text!)!
+               k = Double(klabel.text!)!
+               cl = Double(cllabel.text!)!
+                      
+               aniongap = na - (cl + hco3)
+               dertagap = ( aniongap - 12.0 ) / (24.0 - hco3)
+                      
+               yosokupco2acid = 1.5 * hco3 + 8
+                      
+               yosokupco2alk = 0.7 * hco3 + 21
+                      
+               yosokuphacuteacid = 7.40 - ( 0.008 * ( pco2 - 40.0 ))
+                      
+               yosokuphchoacid = 7.40 - ( 0.003 * ( pco2 - 40.0 ))
+                      
+               yosokuphacutealk = 7.40 + ( 0.008 * ( 40.0 - pco2 ))
+                      
+               yosokuphchoalk = 7.40 + ( 0.003 * ( 40.0 - pco2 ))
+        
+        if ph < 7.35 && pco2 < 40.0 {//1
+                  kaisetu1.text = "代謝性アシドーシスが示唆される。二次障害解析のため予測pco2を計算。予測pco2= 1.5xhco3+8±2"
+                  yosoku1.text = "予測Pco2" + String(describing:yosokupco2acid) + "± 2"
+                 
+                  data.text = String(describing:pco2)
+                  
+                  
+              }
+              else if ph < 7.35 && pco2 >= 40.0 && pco2 <= 45.0 {//2
+                  kaisetu1.text = "代謝性アシドーシスが示唆される。二次障害解析のため予測pco2を計算。予測pco2= 1.5xhco3+8±2"
+                  yosoku1.text = "予測Pco2" + String(describing:yosokupco2acid)  + "± 2 "
+                 
+                  data.text = String(describing:pco2)
+                  
+                  
+              }
+              else if ph < 7.35 && pco2 > 45.0  {//3
+                  kaisetu1.text = "呼吸性アシドーシス。代謝性代償の範囲を推定 予測PH値を計算。　なおHCO3>30の場合十分な代償変化がされている慢性の変化が示唆される 急性の時、予測PH=7.40-0.008x(pco2-40)　慢性の時、予測PH=7.40-0.003x(pco2-40)"
+                  yosoku1.text = "(急性)予測PH" + String(describing:yosokuphacuteacid)
+                  yosoku2.text = "(慢性)予測PH" + String(describing:yosokuphchoacid)
+                  
+                  data.text = String(describing:ph)
+                  
+                  
+              
+              }
+                  
+              else if ph >= 7.35 && ph <= 7.45 && pco2 < 40  {//4
+                  kaisetu1.text = "呼吸性アルカローシスの存在が示唆される。代償の範囲を推定するため予測PH値を計算。なお、HCO3<18の場合十分な代償変化がされている慢性の変化が示唆 慢性の時、予測PH=7.4+0.003x(40-pco2),急性の時、予測PH=7.40-(0.008x(pco2-40))"
+                  yosoku1.text = "急性予測PH" + String(describing:yosokuphacutealk)
+                  yosoku2.text = "慢性予測PH" + String(describing:yosokuphchoalk)
+                  
+                  
+                  data.text = String(describing:ph)
+                  
+                  
+              }
+                  
+                  
+                  
+              else if ph >= 7.35 && ph <= 7.45 && pco2 >= 40.0 && pco2 <= 45.0 && hco3 < 22.0 {//5
+                  kaisetu1.text = "Ph,pco2はいずれも正常範囲内であるが、hco3が低下しておりその低下を補うCLの増加が示唆。高CL性代謝性アシドーシスが疑われる。予測pco2を計算。予測pco2=1.5xhco3+8±2"
+                  yosoku1.text = "予測Pco2" + String(describing:yosokupco2acid) + "±2"
+                  data.text = String(describing:pco2)
+                  
+              }
+              else if ph >= 7.35 && ph <= 7.45 && pco2 >= 40.0 && pco2 <= 45.0 && hco3 >= 22.0 && hco3 <= 26.0 {//6
+                  kaisetu1.text = "PH,pco2,hco3いずれも正常範囲内である。"
+                  
+              }
+              else if ph >= 7.35 && ph <= 7.45 && pco2 >= 40.0 && pco2 <= 45.0 && hco3 > 26.0 {//7
+                  kaisetu1.text = "代謝性アルカローシスの存在が示唆される。二次障害解析のために予測pco2を計算。予測Pco2=0.7xhco3+21±2で求めます。"
+                  yosoku1.text = "予測Pco2" + String(describing:yosokupco2alk) + "±2"
+                  
+                  data.text = String(describing:pco2)
+                  
+              }
+              else if ph >= 7.35 && ph <= 7.45 && pco2 > 45.0 {//8
+                  kaisetu1.text = "呼吸性アシドーシス。代謝性代償の範囲を推定するため予測PH値を計算。急性の時、予測PH=7.40-0.008x(pco2-40)　慢性の時、予測PH=7.40-0.003x(pco2-40)　なおHCO3>30の場合十分な代償変化がされている慢性の変化が示唆される"
+                  yosoku1.text = "急性予測PH" + String(describing:yosokuphacuteacid)
+                  yosoku2.text = "慢性予測PH" + String(describing:yosokuphchoacid)
+                 
+                  data.text = String(describing:ph)
+                  
+              }
+                  
+                  
+              else if ph > 7.45 && pco2 < 40.0 {//9
+                  kaisetu1.text = "呼吸性アルカローシスの存在が示唆される。代謝性代償の範囲を推定するため予測PH値を計算。慢性の時、予測PH=7.4+0.003x(40-pco2),急性の時、予測PH=7.40-(0.008x(pco2-40))なお、HCO3<18の場合十分な代償変化がされている慢性の変化が示唆される"
+                  yosoku1.text = "急性予測PH" + String(describing:yosokuphacutealk)
+                  yosoku2.text = "慢性予測PH" + String(describing:yosokuphchoalk)
+                 
+                  data.text = String(describing:ph)
+                  
+              }
+                  
+              else if ph > 7.45 && pco2 >= 40.0 && pco2 <= 45.0 {//10
+                  kaisetu1.text = "代謝性アルカローシスの存在が示唆。二次障害解析のため予測pco2を計算。予測PH=0.7 xhco3+21±2"
+                  yosoku1.text = "予測Pco2" + String(describing:yosokupco2alk)+"±2"
+                 
+                  data.text = String(describing:pco2)
+                  
+              }
+              else {//11 ph > 7.45 && pco2 > 45
+                  kaisetu1.text = "代謝性アルカローシスの存在が示唆。二次障害解析のため予測pco2を計算。予測PH= 0.7xhco3+21±2"
+                  yosoku1.text = "予測Pco2" + String(describing:yosokupco2alk)+"±2"
+                  /*kaisetu2.text = "実測pco2と予測値を比べて実測値が大きいなら大ボタンを、ほぼ等しいなら＝ボタンを、実測値が小さいなら小ボタンを選択。"*/
+                  
+                  data.text = String(describing:pco2)
+                  
+              }
+              }//解析ボタンの終わり
+    
+    
+    
+    @IBAction func reset(_ sender: Any) {
+        phlabel.text = "7.40"
+        pco2label.text = "40.0"
+        hco3label.text = "24.0"
+        nalabel.text = "140"
+        klabel.text = "4.0"
+        cllabel.text = "104"
+        kaisetu1.text = ""
+        yosoku1.text = "予測値１"
+        yosoku2.text = "予測値２"
+        kaisetu2.text = ""
+        kaisetu3.text = ""
+        kaisetu4.text = ""
+        
+        //albdata.text = "4.0"
+ 
+        aglabel.text = "AnionGap"
+        derugaplabelta.text = "Gap-Gap"
+ 
+        data.text = "実測値"
+ 
+        
+    }//resetボタンの終わり
+    
+    
+    @IBAction func dainari(_ sender: Any) {
+        if ph < 7.35 && pco2 < 40.0 {//①
+                          kaisetu2.text = "実測pco2値が予測値を上回っている。予想よりpco2が上昇する機序、呼吸性アシドーシスの合併が示唆される。"
+                   }
+                          else if ph < 7.35 && pco2 >= 40.0 && pco2 <= 45.0{
+                              kaisetu2.text = "実測pco2値が予測値を上回っている。予想よりpco2が上昇する機序、呼吸性アシドーシスの合併が示唆される。"
+                          }
+                          else if ph < 7.35 && pco2 > 45.0 && hco3 < 30 {
+                              kaisetu2.text = "実測PHが予測値より大きいので、予測よりアルカリに傾ける機序、代謝性アルカローシスの合併が示唆される。"
+                          }
+                          else if ph < 7.35 && pco2 > 45.0 && hco3 >= 30 {//④
+                              kaisetu2.text = "実測PHが予測値より大きいので、予測よりアルカリに傾ける機序、代謝性アルカローシスの合併が示唆されます。"
+                          }
+                          else if ph >= 7.35 && ph <= 7.45 && pco2 < 40 && hco3 > 18 {//⑤
+                              kaisetu2.text = "実測PHが予測値より大きい時、予測よりアルカリに傾ける機序、代謝性アルカローシスの合併が示唆。実測pco2が大きい可能性はない。（呼吸性のアシドーシスとアルカローシスは並存できないため"
+                          }
+                          else if ph >= 7.35 && ph <= 7.45 && pco2 < 40 && hco3 <= 18 {//⑥
+                              kaisetu2.text = "実測PHが予測値より大きい時、予測よりアルカリに傾ける機序、代謝性アルカローシスの合併が示唆。実測pco2が大きい可能性はない。（呼吸性のアシドーシスとアルカローシスは並存できないため"
+                          }
+                          else if ph >= 7.35 && ph <= 7.45 && pco2 >= 40.0 && pco2 <= 45.0 && hco3 < 22.0 {//⑦
+                              kaisetu2.text = "実測pco2値が予測値を上回っています。予想よりpco2が上昇する機序、呼吸性アシドーシスの合併が示唆されます。"
+                          }
+                          else if ph >= 7.35 && ph <= 7.45 && pco2 >= 40.0 && pco2 <= 45.0 && hco3 > 26.0 {//⑨
+                              kaisetu2.text = "実測pco2値が予測値を上回っています。予想よりpco2が上昇する機序、呼吸性アシドーシスの合併が示唆されます。"
+                          }
+                          else if ph >= 7.35 && ph <= 7.45 && pco2 > 45.0 && hco3 < 30.0 {//⑩
+                              kaisetu2.text = "実測PHが予測値より大きいので、予測よりアルカリに傾ける機序、代謝性アルカローシスの合併が示唆されます。"
+                          }
+                          else if ph >= 7.35 && ph <= 7.45 && pco2 > 45.0 && hco3 >= 30.0{//⑪
+                              kaisetu2.text = "実測PHが予測値より大きいので、予測よりアルカリに傾ける機序、代謝性アルカローシスの合併が示唆されます。"
+                          }
+                          else if ph > 7.45 && pco2 < 40.0 && hco3 > 18.0 {//⑫
+                              kaisetu2.text = "実測PHが予測値より大きいので、予測よりアルカリに傾ける機序、代謝性アルカローシスの合併が示唆されます。"
+                          }
+                          else if ph > 7.45 && pco2 < 40.0 && hco3 <= 18.0 {//⑬
+                              kaisetu2.text = "実測PHが予測値より大きいので、予測よりアルカリに傾ける機序、代謝性アルカローシスの合併が示唆されます。"
+                          }
+                          else if ph > 7.45 && pco2 >= 40.0 && pco2 <= 45.0 {//⑭
+                              kaisetu2.text = "実測pco2値が予測値より大きく、pco2が上昇する機序、呼吸性アシドーシスの合併が示唆されます。"
+                          }
+                          else {
+                              kaisetu2.text = "実測pco2値が予測値より大きく、pco2が上昇する機序、呼吸性アシドーシスの合併が示唆されます。"
+                          }
+    }//dainariボタンの終わり
+    
+    
+    
+    @IBAction func hitosii(_ sender: Any) {
+        if ph < 7.35 && pco2 < 40.0 {//①
+            kaisetu2.text = "実測値は予測範囲内なので正常な呼吸性代償の範囲にあります"
+        }
+        else if ph < 7.35 && pco2 >= 40.0 && pco2 <= 45.0{
+            kaisetu2.text = "実測値は予測範囲内なので正常な呼吸性代償の範囲にあります"
+        }
+        else if ph < 7.35 && pco2 > 45.0 && hco3 < 30 {
+            kaisetu2.text = "実測PHが予測とほぼ同じなので代謝性の代償機転が働いていると思われます。"
+        }
+        else if ph < 7.35 && pco2 > 45.0 && hco3 >= 30 {//④
+            kaisetu2.text = "実測PHが予測とほぼ同じなので代謝性の代償機転が働いていると思われます。"
+        }
+        else if ph >= 7.35 && ph <= 7.45 && pco2 < 40 && hco3 > 18 {//⑤
+            kaisetu2.text = "実測値が予測とほぼ同じなので代償機転が働いていると思われます。"
+        }
+        else if ph >= 7.35 && ph <= 7.45 && pco2 < 40 && hco3 <= 18 {//⑥
+            kaisetu2.text = "実測値が予測とほぼ同じなので代償機転が働いていると思われます。"
+        }
+        else if ph >= 7.35 && ph <= 7.45 && pco2 >= 40.0 && pco2 <= 45.0 && hco3 < 22.0 {//⑦
+            kaisetu2.text = "実測pco2値は予測範囲内なので正常な呼吸性代償の範囲にあります"
+        }
+        else if ph >= 7.35 && ph <= 7.45 && pco2 >= 40.0 && pco2 <= 45.0 && hco3 > 26.0 {//⑨
+            kaisetu2.text = "実測pco2値は予測範囲内なので正常な呼吸性代償の範囲にあります。"
+        }
+        else if ph >= 7.35 && ph <= 7.45 && pco2 > 45.0 && hco3 < 30.0 {//⑩
+            kaisetu2.text = "実測PHが予測とほぼ同じなので代謝性の代償機転が働いていると思われます。"
+        }
+        else if ph >= 7.35 && ph <= 7.45 && pco2 > 45.0 && hco3 >= 30.0{//⑪
+            kaisetu2.text = "実測PHが予測とほぼ同じなので代謝性の代償機転が働いていると思われます。"
+        }
+        else if ph > 7.45 && pco2 < 40.0 && hco3 > 18.0 {//⑫
+            kaisetu2.text = "実測PHが予測とほぼ同じなので代謝性の代償機転が働いていると思われます。"
+        }
+        else if ph > 7.45 && pco2 < 40.0 && hco3 <= 18.0 {//⑬
+            kaisetu2.text = "実測PHが予測とほぼ同じなので代謝性の代償機転が働いていると思われます。"
+        }
+        else if ph > 7.45 && pco2 >= 40.0 && pco2 <= 45.0 {//⑭
+            kaisetu2.text = "実測pco2値は予測範囲内なので正常な呼吸性代償の範囲にあります。"
+        }
+        else {
+            kaisetu2.text = "実測pco2値は予測範囲内なので正常な呼吸性代償の範囲にあります。"
+            
+        }
+    }//hitosiiボタンの終わり
+    
+    
+    
+    @IBAction func shounari(_ sender: Any) {
+        if ph < 7.35 && pco2 < 40.0 {//①
+                   kaisetu2.text = "実測pco2値が予測値を下回っています。予想より過換気になる機序、呼吸性アルカローシスの合併が示唆されます。"
+               }
+               else if ph < 7.35 && pco2 >= 40.0 && pco2 <= 45.0{
+                   kaisetu2.text = "実測pco2値が予測値を下回っています。予想より過換気になる機序、呼吸性アルカローシスの合併が示唆されます。"
+               }
+               else if  ph < 7.35 && pco2 > 45.0 && hco3 < 30 {
+                   kaisetu2.text = "実測PHが予測値より小さいので予測より酸性に傾ける機序、代謝性アシドーシスの合併が示唆されます。AGを計算し代謝性アシドーシスのタイプを同定してください"
+               }
+               else if ph < 7.35 && pco2 > 45.0 && hco3 >= 30 {//④
+                   kaisetu2.text = "実測PHが予測値より小さいので予測より酸性に傾ける機序、代謝性アシドーシスの合併が示唆されます。AGを計算し代謝性アシドーシスのタイプを同定してください"
+               }
+               else if ph >= 7.35 && ph <= 7.45 && pco2 < 40 && hco3 > 18 {//⑤
+                   kaisetu2.text = "実測PHが予測値より小さいので予測より酸性に傾ける機序、代謝性アシドーシスの合併が示唆。AGを計算。実測pco2が小さい時呼吸性アルカローシスの合併あり。"
+               }
+               else if ph >= 7.35 && ph <= 7.45 && pco2 < 40 && hco3 <= 18 {//⑥
+                   kaisetu2.text = "実測PHが予測値より小さいので予測より酸性に傾ける機序、代謝性アシドーシスの合併が示唆されます。AGを計算。実測pco2が小さい時呼吸性アルカローシスの合併あり。"
+               }
+               else if ph >= 7.35 && ph <= 7.45 && pco2 >= 40.0 && pco2 <= 45.0 && hco3 < 22.0 {//⑦
+                   kaisetu2.text = "実測pco2値が予測値を下回っています。予想より過換気になる機序、呼吸性アルカローシスの合併が示唆されます。"
+               }
+               else if ph >= 7.35 && ph <= 7.45 && pco2 >= 40.0 && pco2 <= 45.0 && hco3 > 26.0 {//⑨
+                   kaisetu2.text = "実測pco2値が予測値を下回っています。予想より過換気になる機序、呼吸性アルカローシスの合併が示唆されます。"
+               }
+               else if ph >= 7.35 && ph <= 7.45 && pco2 > 45.0 && hco3 < 30.0 {//⑩
+                   kaisetu2.text = "実測PHが予測値より小さいので予測より酸性に傾ける機序、代謝性アシドーシスの合併が示唆されます。AGを計算し代謝性アシドーシスのタイプを同定してください。"
+               }
+               else if ph >= 7.35 && ph <= 7.45 && pco2 > 45.0 && hco3 >= 30.0{//⑪
+                   kaisetu2.text = "実測PHが予測値より小さいので予測より酸性に傾ける機序、代謝性アシドーシスの合併が示唆されます。AGを計算し代謝性アシドーシスのタイプを同定してください。"
+               }
+               else if ph > 7.45 && pco2 < 40.0 && hco3 > 18.0 {//⑫
+                   kaisetu2.text = "実測PHが予測値より小さいので予測より酸性に傾ける機序、代謝性アシドーシスの合併が示唆されます。AGを計算し代謝性アシドーシスのタイプを同定してください。"
+               }
+               else if ph > 7.45 && pco2 < 40.0 && hco3 <= 18.0 {//⑬
+                   kaisetu2.text = "実測PHが予測値より小さいので予測より酸性に傾ける機序、代謝性アシドーシスの合併が示唆されます。AGを計算し代謝性アシドーシスのタイプを同定してください。"
+               }
+               else if ph > 7.45 && pco2 >= 40.0 && pco2 <= 45.0 {//⑭
+                   kaisetu2.text = "実測pco2値が予測値を下回っています。予想より過換気になる機序、呼吸性アルカローシスの合併が示唆されます。"
+               }
+               else {
+                   kaisetu2.text = "実測pco2値が予測値を下回っています。予想より過換気になる機序、呼吸性アルカローシスの合併が示唆されます。"
+               }
+    }//shounariボタンの終わり
+    
+    
+    @IBAction func agkeisan(_ sender: Any) {
+        na = Double(nalabel.text!)!
+        k = Double(klabel.text!)!
+        cl = Double(cllabel.text!)!
+        //alb = Double(albdata.text!)!
+        
+        aniongap = (na - (cl + hco3))
+        
+            //+ ( 4 - alb )*2.5　alb補正式
+                      
+        aglabel.text = String(describing:aniongap)
+
+    }//agkeisanボタンの終わり
+    
+    @IBAction func ookii(_ sender: Any) {
+        kaisetu3.text = "Anion Gapが増大するタイプの代謝性アシドーシスが存在。並存する代謝性障害の診断のためにGAP-GAPを計算してください。"
+        
+        na = Double(nalabel.text!)!
+        k = Double(klabel.text!)!
+        cl = Double(cllabel.text!)!
+        hco3 = Double(hco3label.text!)!
+        aniongap = na - (cl + hco3)
+        dertagap = ( aniongap - 12.0 ) / (24.0 - hco3)//24-24 =0 になる時　無限大　　12-12の時は0？
+        //分子が０の時０　分母が０の時∞
+        derugaplabelta.text = String(describing:dertagap)
+    }//ookiiボタンの終わり
+    
+    @IBAction func seijou(_ sender: Any) {
+        kaisetu3.text = "Anion Gapは正常の状態、または代謝性アシドーシスの存在下では、AG正常の代謝性アシドーシス。Hco3の減少分をCLの増大で補填している状態です。"
+    }//seijouボタンの終わり
+    
+    @IBAction func tiisai(_ sender: Any) {
+        kaisetu3.text = "AGが減少しています。病態推定のために次ページのAG低下する病態ボタンを選択してください。AGが低下、陰性化する時　UCの増加（測定不能な陽イオンの増加）はK、Ca,Mgの増加　IgG型の多発性骨髄腫、Polyclonal gammmopathy、リチウム、ポリミキシンBなどが考えられます。UA：測定不可能な陰イオンが減少する場合はアルブミンの低下が考慮され、CLの偽性高値が原因の場合は、ハロゲン族による修飾（Brブロム、Iヨード）が考慮されます"
+    }//tiisaiボタンの終わり
+    
+    
+    @IBAction func dai(_ sender: Any) {
+        kaisetu4.text = "代謝性アルカローシスの合併"
+    }
+    
+    @IBAction func sei(_ sender: Any) {
+        kaisetu4.text = "並存する代謝性障害は認めない"
+    }
+    
+    @IBAction func sho(_ sender: Any) {
+        kaisetu4.text = "AG正常の代謝性アシドーシスの合併"
+    }
+
+}//すべての終わり
+
